@@ -186,16 +186,23 @@ class Game:
     def attribute_points(self) -> list:
         for i in range(len(self.highest_scores)):
             highest_score = self.find_higher(self.highest_scores[i])
-        
+
                 
         return list
 
     
     #Encontra o maior valor de um tipo de score das 13 rodadas realizadas
     def find_higher(self, scores) -> int:
-        result = 0
+        highest = scores[0]
 
-        return result
+        highest_index = 0
+
+        for value, index in enumerate(scores[1:], start=1):
+            if value > highest:
+                highest = value
+                highest_index = index
+
+        return highest
         
 
 def main():
