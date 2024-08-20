@@ -1,6 +1,6 @@
 from collections import Counter
 
-def check_full_house(sequence: list()) -> int:
+def check_full_house(sequence: list) -> int:
     counter = Counter(sequence)
     if len(counter.keys()) == 2:
         for key in counter.keys():
@@ -8,7 +8,7 @@ def check_full_house(sequence: list()) -> int:
                 return 40
     return 0
 
-def check_small_straight(sequence: list()) -> int:
+def check_small_straight(sequence: list) -> int:
     is_small1 = True
     is_small2 = True
     sequence.sort()
@@ -22,7 +22,7 @@ def check_small_straight(sequence: list()) -> int:
         return 25
     return 0
 
-def check_large_straight(sequence: list()) -> int:
+def check_large_straight(sequence: list) -> int:
     is_large = True
     sequence.sort()
     for i in range(1,5):
@@ -32,69 +32,70 @@ def check_large_straight(sequence: list()) -> int:
         return 35
     return 0
 
-def check_3_like(sequence: list()) -> int:
+def check_3_like(sequence: list) -> int:
     counter = Counter(sequence)
     for key in counter.keys():
         if counter[key] >= 3:
             return sum(sequence)
     return 0
 
-def check_4_like(sequence: list()) -> int:
+def check_4_like(sequence: list) -> int:
     counter = Counter(sequence)
     for key in counter.keys():
         if counter[key] == 3:
             return sum(sequence)
     return 0
     
-def check_5_like(sequence: list()) -> int:
+def check_5_like(sequence: list) -> int:
     counter = Counter(sequence)
-    if len(counter.keys()) == 5:
-        return 50
+    for key in counter.keys():
+        if counter[key] == 5:
+            return 50
     return 0
 
-def ones(sequence: list())-> int:
+def ones(sequence: list)-> int:
     soma = 0
     for number in sequence:
         if number == 1:
             soma += 1
     return soma
 
-def twos(sequence: list())-> int:
+def twos(sequence: list)-> int:
     soma = 0
     for number in sequence:
         if number == 2:
             soma += 2
     return soma
 
-def threes(sequence: list())-> int:
+def threes(sequence: list)-> int:
     soma = 0
     for number in sequence:
         if number == 3:
             soma += 3
     return soma
 
-def fours(sequence: list())-> int:
+def fours(sequence: list)-> int:
     soma = 0
     for number in sequence:
         if number == 4:
             soma += 4
     return soma
     
-def fives(sequence: list())-> int:
+def fives(sequence: list)-> int:
     soma = 0
     for number in sequence:
         if number == 5:
             soma += 5
     return soma
     
-def six(sequence: list())-> int:
+def six(sequence: list)-> int:
     soma = 0
     for number in sequence:
         if number == 6:
             soma += 6
     return soma
 
-def chance(sequence: list())-> int:
+def chance(sequence: list)-> int:
     soma = 0
     for number in sequence:
         soma += number
@@ -117,26 +118,23 @@ class Game:
         for i in range(13):
             self.highest_scores.append(list())
 
+        self.filled_scores = [False]*13
+
         #sequência os pontos finais
         self.maximum_sequence = list()
 
 
     #adiciona um id de uma sequência a um determinado tipo de score
     def __add_score(self, index, id, chance):
-        i = 0
-        while i < len(self.highest_scores[index]) and chance > self.highest_scores[index][i]:
-            i += 1
+        
         #temp é usado apenas para adicionar o id na posição que deveria estar
-        self.highest_scores[index] = self.highest_scores[index][:i] + [id] + self.highest_scores[index][i:]
+        self.highest_scores[index].append(chance)
 
     #para adicionar os scores referentes aos números (1,2,...,6) é necessário
     #uma política diferente (eles são oordenados pelo score ao invés de chance)
     def __add_number_scores(self,index, id, score):
-        i = 0
-        while i < len(self.highest_scores[index]) and score < self.highest_scores[index][i]:
-            i += 1
         
-        self.highest_scores[index] = self.highest_scores[index][:i] + [id] + self.highest_scores[index][i:]
+        self.highest_scores[index].append(score)
 
 
 
@@ -164,41 +162,46 @@ class Game:
         #Esses índices são adotados de tal maneira simplesmente para poder 
 
         if three_like != 0:
-            self.__add_score(7, id, chance)
+            self.__add_score(7, id, three_like)
+        else: self.__add_score(7, id, 0)
         if  four_like != 0:
-            self.__add_score(8, id, chance)
+            self.__add_score(8, id, four_like)
+        else: self.__add_score(8, id, 0)
         if  five_like != 0:
-            self.__add_score(9, id, chance)
+            self.__add_score(9, id, five_like)
+        else: self.__add_score(9, id, 0)
         if  small_straight != 0:
-            self.__add_score(10, id, chance)
+            self.__add_score(10, id, small_straight)
+        else: self.__add_score(10, id, 0)
         if  large_straight != 0:
-            self.__add_score(11, id, chance)
+            self.__add_score(11, id, large_straight)
+        else: self.__add_score(11, id, 0)
         if  full_house != 0:
-            self.__add_score(12, id, chance)
+            self.__add_score(12, id, full_house)
+        else: self.__add_score(12, id, 0)
     
     #IGNORE ESSA FUNÇÃO POR ENQUANTO
     #é necessário começar atribuindo o ponto para os scores de maior valor primeiro (5_like, full_house, 4_like, ...)
     #tal qual atualmente, essa função começará pelos 1's
-    def attribute_points(self) -> list():
+    def attribute_points(self) -> list:
         for i in range(len(self.highest_scores)):
-            #iteramos pelas sequências de cada tipo de score até encontrar uma disponível
-            index = 0
-            current_sequence = self.sequences[self.highest_scores[i][index]]
-            while index < len(self.highest_scores[i]):
-                if current_sequence.available == True:
-                    break
-                index += 1
-                current_sequence = self.sequences[self.highest_scores[i][index]]
-            
+            highest_score = self.find_higher(self.highest_scores[i])
+        
+                
+        return list
 
+    
+    #Encontra o maior valor de um tipo de score das 13 rodadas realizadas
+    def find_higher(self, scores) -> int:
+        result = 0
 
-        return
+        return result
         
 
 def main():
     game = Game()
     for i in range(13):
-        line = input()
+        line = "1 2 3 4 5"
         line_list = line.split()
         for i in range(len(line_list)):
             line_list[i] = int(line_list[i])
